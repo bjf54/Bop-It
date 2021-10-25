@@ -79,4 +79,7 @@ int tempoSlider ( choice, score )
     }
         
     }
+    
+    //Idk if this is the only thing we should return but def this is one of them
+    return score;
 } 
