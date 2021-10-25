@@ -1,5 +1,5 @@
 # Bop-It
-Jinior Design Bop! It Porject
+Jinior Design Bop! It Project
 
 void setup() {
   
