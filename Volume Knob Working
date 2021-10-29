@@ -1,3 +1,5 @@
+// Brandon Ferruzza
+
 #define POTENTIOMETER_PIN A0
 #define LED_PIN           7
 
