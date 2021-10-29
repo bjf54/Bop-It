@@ -1,0 +1,45 @@
+#define POTENTIOMETER_PIN A0
+#define LED_PIN           7
+
+float initialVoltage = 0;
+
+// This function sets up the ATMega by designating pins to specific inputs and outputs
+void setup() 
+{
+  // Assigning input pin for the volume knob potentiometer
+  pinMode(POTENTIOMETER_PIN, INPUT);
+  
+  // Assigning output pin 13 for the LED that lights up over potentometer
+  pinMode(LED_PIN, OUTPUT);
+
+  // Get the initial voltage before the minigame officially begins
+  initialVoltage = analogRead(POTENTIOMETER_PIN) * (5.0 / 1023.0);
+}
+
+// Main function
+void loop() 
+{
+    digitalWrite(LED_PIN, LOW);
+    
+    // Defining a treshold for the diffrence between two voltages to count as a pass
+    float minVoltage = 1;
+    int count = 0;
+    
+    while(count < 4)
+    {
+      // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V)
+      float currentVoltage = analogRead(POTENTIOMETER_PIN) * (5.0 / 1023.0);
+    
+      // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
+      if (abs(initialVoltage - currentVoltage) >= minVoltage)
+      {
+        digitalWrite(LED_PIN, HIGH);
+        initialVoltage = analogRead(POTENTIOMETER_PIN) * (5.0 / 1023.0);
+        delay(1000);
+        break;
+      }
+
+      count++;
+      delay(100);
+    }
+}
