@@ -1,4 +1,4 @@
-# Bop-It
+// Bop-It
 // Junior Design Bop! It Project
 // Brandon Ferruzza
 // Daniel Feathers
