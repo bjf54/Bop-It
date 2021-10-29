@@ -92,11 +92,11 @@ bool volumeKnob(float allotedRunTime, int score)
     
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
-    int minVoltage = 0.5;
+    float minVoltage = 0.5;
 		
 		// Get the initial voltage before the minigame officially begins
 		float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
-    
+
 		// While loop that checks the current status of the minigame
     while ((currentTime - initialTime) < allotedRunTime)
     {
@@ -135,7 +135,7 @@ bool tempoSlider(float allotedRunTime, int score)
     
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
-    int minVoltage = 0.5;
+    float minVoltage = 0.5;
 		
 		// Get the initial voltage before the minigame officially begins
 		float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
@@ -177,7 +177,7 @@ bool volumeKnob(float allotedRunTime, int score)
     
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
-    int minVoltage = 0.5;
+    float minVoltage = 0.5;
 		
 		// Get the initial voltage before the minigame officially begins
 		float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
