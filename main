@@ -77,6 +77,30 @@ void loop()
   // Continue the game as long as the user is successful
   while(successful = true)
   {
+  	// Change the alloted time for each minigame depending on progress
+	if (score >= 5)
+	{
+		allotedRunTime = 2500;
+		
+		// Time for a score of 10 or higher
+		if (score >= 10)
+		{
+			allotedRunTime = 2000;
+			
+			// Time for a score of 20 or higher
+			if (score >= 20)
+			{
+				allotedRunTime = 1500;
+				
+				// Time for a score of 30 or higher
+				if (score >= 30)
+				{
+					allotedRunTime = 1000;
+				}
+			}
+		}
+	}
+  
     // Randomly pick a number between 1 and 3 to choose a minigame
     int choice = random(1, 3);
     
