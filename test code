@@ -1,0 +1,22 @@
+//Slide potentiometer on pin A0
+int potmeterPin = A0;
+//Slide potentiometer value
+int potmeterVal = 0;
+
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+    
+  // Read the analog value of the slide potentiometer
+  potmeterVal = analogRead(potmeterPin);
+  // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V)
+  float voltageInt = potmeterVal * (5.0 / 1023.0); 
+  
+  Serial.println(voltageInt);              // Show the value on the serial monitor
+
+  delay(700);                               // Pause 100ms
+  
+}
