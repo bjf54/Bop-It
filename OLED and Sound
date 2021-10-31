@@ -1,0 +1,49 @@
+//This has library of where the code is from and refernaces will help with functions
+//https://github.com/olikraus/u8g2/wiki/u8x8reference
+
+#include <U8x8lib.h>
+#include "SD.h"
+#include "TMRpcm.h"
+#include "SPI.h"
+
+#define SD_ChipSelectPin 10
+#define OLED_DC     8
+#define OLED_CS     7
+#define OLED_RESET  6
+
+U8X8_SSD1306_128X64_NONAME_4W_SW_SPI u8x8(
+  //Define pins
+  /* clock=*/ 13, /* data=*/ 11, OLED_CS, OLED_DC, OLED_RESET
+ );
+
+TMRpcm tmrpcm;
+
+void setup(void) {
+  u8x8.begin();
+  //The type of font 
+  u8x8.setFont(u8x8_font_chroma48medium8_r);
+  //What is prints out to the display
+  //0,0 is xy corrdinate 
+  u8x8.drawString(0,0,"Hello World!");
+  
+  //The speaker pin input 
+  tmrpcm.speakerPin=9;
+  Serial.begin(9600);
+  
+  //Reads the chip
+  if(!SD.begin(SD_ChipSelectPin))
+  {
+    //Prints out if the program fails so read the SD card
+    Serial.println("SD fail");
+    return;
+  }
+  //Sets the volume 
+  tmrpcm.setVolume(6);
+}
+
+void loop(void) {
+  //Loops the file and prints out Hello World to the siplay 
+  tmrpcm.play("mario.wav");
+  u8x8.drawString(0,0,"Hello World!");
+  delay(5000);
+}
