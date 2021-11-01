@@ -6,8 +6,9 @@
 #include "TMRpcm.h"
 #include "SPI.h"
 
+//Cant call them like PC0 bc Joe say no work 
 #define SD_ChipSelectPin 10
-#define OLED_DC     8
+#define OLED_DC     A2
 #define OLED_CS     7
 #define OLED_RESET  6
 
@@ -34,7 +35,7 @@ void setup(void) {
   if(!SD.begin(SD_ChipSelectPin))
   {
     //Prints out if the program fails so read the SD card
-    Serial.println("SD fail");
+    Serial.println("SD fail"); 
     return;
   }
   //Sets the volume 
