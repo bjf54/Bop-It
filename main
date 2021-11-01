@@ -7,57 +7,62 @@
 
 //------------------------------------------------ INITIALIZATION ----------------------------------------------------
 
-// Define the input pins for the start buttons
-#DEFINE POWERBUTTON_PIN	A0
-#DEFINE STARTBUTTON_PIN	A0
+// Define the input pins for the start button
+#define STARTBUTTON_PIN   PD6
 
 // Define the input pins for the minigame hardware
-#DEFINE KNOB_PIN		A0
-#DEFINE SLIDER_PIN		A0
-#DEFINE TURNTABLE_PIN	A0
+#define KNOB_PIN          PC1
+#define SLIDER_PIN        PC0
+#define TURNTABLE_PIN     PD5
 
 // Define the output pins for the LEDs indicating which minigame to play
-#DEFINE LED_KNOB		A0
-#DEFINE LED_SLIDER		A0
-#DEFINE LED_TURNTABLE	A0
+#define LED_KNOB          PD2
+#define LED_SLIDER        PD3
+#define LED_TURNTABLE     PD4
 
-// Define the output pins for the visual and audio displays
-#DEFINE OLED_PIN		A0
-#DEFINE LED_SUCCESS		A0
-#DEFINE SPEAKER_PIN		A0
+// Define the output pins for the visual displays
+#define OLED_PIN          PD7
+#define LED_SUCCESS_GREEN PD1
+#define LED_SUCCESS_RED   PD0
+
+// Define the output pins for the audio displays
+#define SPEAKER_PIN       PB1
+#define SD_PIN            PB2
 
 // This function sets up the ATMega by designating pins to specific inputs and outputs
 void setup() 
 {
-	// Assigning input pin for the volume knob potentiometer
-	pinMode(KNOB_PIN, INPUT);
+  // Assigning input pin for the volume knob potentiometer
+  pinMode(KNOB_PIN, INPUT);
   
-	// Assigning input pin for the tempo slider potentiometer
-	pinMode(SLIDER_PIN, INPUT);
+  // Assigning input pin for the tempo slider potentiometer
+  pinMode(SLIDER_PIN, INPUT);
 
-	// Assigning input pin for the turn table rotary encoder
-	pinMode(TURNTABLE_PIN, INPUT);
+  // Assigning input pin for the turn table rotary encoder
+  pinMode(TURNTABLE_PIN, INPUT);
+  
+  // Assigning output pin for the LED that lights up over the volume knob
+  pinMode(LED_KNOB, OUTPUT);
 
-	// Assigning input pin for the button that starts the game
-	pinMode(POWERBUTTON_PIN, INPUT);
-	
-	// Assigning output pin for the LED that lights up over the volume knob
-	pinMode(LED_KNOB, OUTPUT);
+  // Assigning output pin for the LED that lights up over the tempo slider
+  pinMode(LED_SLIDER, OUTPUT);
 
-	// Assigning output pin for the LED that lights up over the tempo slider
-	pinMode(LED_SLIDER, OUTPUT);
+  // Assigning output pin for the LED that lights up over the turn table
+  pinMode(LED_TURNTABLE, OUTPUT);
 
-	// Assigning output pin for the LED that lights up over the turn table
-	pinMode(LED_TURNTABLE, OUTPUT);
+  // Assigning output pin for the OLED screen 
+  pinMode(OLED_PIN, OUTPUT);
 
-	// Assigning output pin for the OLED screen 
-	pinMode(OLED_PIN, OUTPUT);
-	
-	// Assigning output pin for the speaker
-	pinMode(SPEAKER_PIN, OUTPUT);
+  // Assigning output pin for the success RGB LED
+  pinMode(LED_SUCCESS_GREEN, OUTPUT);
+  pinMode(LED_SUCCESS_RED, OUTPUT);
+  
+  // Assigning output pin for the speaker
+  pinMode(SPEAKER_PIN, OUTPUT);
+  pinMode(SD_PIN, OUTPUT);
 
-	// Begin Playing Main Music Track
-	//CALL AUDIO FUNCTION WITH MUSIC TRACK AS INPUT VARIABLE
+  // Begin Playing Main Music Track
+  //CALL AUDIO FUNCTION WITH MUSIC TRACK AS INPUT VARIABLE
 }
 
 //------------------------------------------------ MAIN ----------------------------------------------------
@@ -77,29 +82,29 @@ void loop()
   // Continue the game as long as the user is successful
   while(successful = true)
   {
-  	// Change the alloted time for each minigame depending on progress
-	if (score >= 5)
-	{
-		allotedRunTime = 2500;
-		
-		// Time for a score of 10 or higher
-		if (score >= 10)
-		{
-			allotedRunTime = 2000;
-			
-			// Time for a score of 20 or higher
-			if (score >= 20)
-			{
-				allotedRunTime = 1500;
-				
-				// Time for a score of 30 or higher
-				if (score >= 30)
-				{
-					allotedRunTime = 1000;
-				}
-			}
-		}
-	}
+    // Change the alloted time for each minigame depending on progress
+  if (score >= 5)
+  {
+    allotedRunTime = 2500;
+    
+    // Time for a score of 10 or higher
+    if (score >= 10)
+    {
+      allotedRunTime = 2000;
+      
+      // Time for a score of 20 or higher
+      if (score >= 20)
+      {
+        allotedRunTime = 1500;
+        
+        // Time for a score of 30 or higher
+        if (score >= 30)
+        {
+          allotedRunTime = 1000;
+        }
+      }
+    }
+  }
   
     // Randomly pick a number between 1 and 3 to choose a minigame
     int choice = random(1, 3);
@@ -137,18 +142,18 @@ bool volumeKnob(float allotedRunTime, int score)
 
     // The time it took since the program started 
     float initialTime = millis();
-		
-	// Time since the minigame began
-	float currentTime = millis();
+    
+    // Time since the minigame began
+    float currentTime = millis();
     
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
     float minVoltage = 0.5;
-		
-	// Get the initial voltage before the minigame officially begins
-	float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
+    
+    // Get the initial voltage before the minigame officially begins
+    float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
 
-	// While loop that checks the current status of the minigame
+    // While loop that checks the current status of the minigame
     while ((currentTime - initialTime) < allotedRunTime)
     {
       // Get the current time
@@ -161,37 +166,37 @@ bool volumeKnob(float allotedRunTime, int score)
       if (abs(initialVoltage - currentVoltage) >= minVoltage)
       {
         // Add one point to the score and return to the main program
-		digitalWrite(LED_KNOB, LOW);
-		score = score + 1;
-		return TRUE;
+        digitalWrite(LED_KNOB, LOW);
+        score = score + 1;
+        return true;
       }
     }
     
     // Return false if the user fails to complete the task in time
-	digitalWrite(LED_KNOB, LOW);
-    return FALSE;  
+    digitalWrite(LED_KNOB, LOW);
+    return false;  
 }
 
 // Tempo Slider minigame
 bool tempoSlider(float allotedRunTime, int score)
 {
-	// Light up the LED above the tempo slider 
-	digitalWrite(LED_SLIDER, HIGH);
-	
+    // Light up the LED above the tempo slider 
+    digitalWrite(LED_SLIDER, HIGH);
+  
     // The time it took since the program started 
     float initialTime = millis();
-		
-	// Time since the minigame began
-	float currentTime = millis();
+    
+    // Time since the minigame began
+    float currentTime = millis();
 
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
     float minVoltage = 0.5;
-		
-	// Get the initial voltage before the minigame officially begins
-	float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
+    
+    // Get the initial voltage before the minigame officially begins
+    float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
 
-	// While loop that checks the current status of the minigame
+    // While loop that checks the current status of the minigame
     while ((currentTime - initialTime) < allotedRunTime)
     {
       // Get the current time
@@ -205,36 +210,36 @@ bool tempoSlider(float allotedRunTime, int score)
       {
         // Add one point to the score and return to the main program
         digitalWrite(LED_SLIDER, LOW);
-		score = score + 1;
-		return TRUE;
+        score = score + 1;
+        return true;
       }
     }
     
     // Return false if the user fails to complete the task in time
-	digitalWrite(LED_SLIDER, LOW);
-    return FALSE;  
+    digitalWrite(LED_SLIDER, LOW);
+    return false;  
 }
 
 // Turn Table minigame
-bool volumeKnob(float allotedRunTime, int score)
+bool turnTable(float allotedRunTime, int score)
 {
-	// Light up the LED above the turn table
-	digitalWrite(LED_TURNTABLE, HIGH);
+    // Light up the LED above the turn table
+    digitalWrite(LED_TURNTABLE, HIGH);
 
     // The time it took since the program started 
     float initialTime = millis();
-		
-	// Time since the minigame began
-	float currentTime = millis();
+    
+    // Time since the minigame began
+    float currentTime = millis();
     
     // Defining a treshold for the diffrence between two voltages to count as a pass
     // Need to get this value by testing but temp 0.5v for now  
     float minVoltage = 0.5;
-		
-	// Get the initial voltage before the minigame officially begins
-	float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
+    
+    // Get the initial voltage before the minigame officially begins
+    float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
 
-	// While loop that checks the current status of the minigame
+    // While loop that checks the current status of the minigame
     while ((currentTime - initialTime) < allotedRunTime)
     {
       // Get the current time
@@ -248,14 +253,14 @@ bool volumeKnob(float allotedRunTime, int score)
       {
         // Add one point to the score and return to the main program
         digitalWrite(LED_TURNTABLE, LOW);
-		score = score + 1;
-		return TRUE;
+        score = score + 1;
+        return true;
       }
     }
     
     // Return false if the user fails to complete the task in time
-	digitalWrite(LED_TURNTABLE, LOW);
-    return FALSE;  
+    digitalWrite(LED_TURNTABLE, LOW);
+    return false;  
 }
 
 //------------------------------------------------ DISPLAY ----------------------------------------------------
