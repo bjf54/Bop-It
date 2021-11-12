@@ -84,6 +84,12 @@ void setup()
 
   // Set the volume of the speaker
   tmrpcm.setVolume(6); */
+  
+  // Draw a welcome message on the OLED screen
+  u8x8.drawString(0,0,"Press the Start button to begin!");
+  
+  // Check for button press only during first playthrough
+  bool firstPlay = false;
 }
 
 //------------------------------------------------ MAIN ----------------------------------------------------
@@ -96,14 +102,31 @@ void loop()
   digitalWrite(LED_SLIDER, LOW);
   digitalWrite(LED_TURNTABLE, LOW);
   digitalWrite(LED_SUCCESS_GREEN, HIGH);
-  digitalWrite(LED_SUCCESS_RED, LOW);
+  digitalWrite(LED_SUCCESS_RED, HIGH);
   
-  /*// Begin playing the background music
+  // Only run this during first playthrough
+  if (firstPlay == false)
+  {
+    // Keep the user looped until they press the start button
+    int startButtonState = digitalRead(STARTBUTTON_PIN);
+    int lastStartButtonState = startButtonState;
+
+    while (startButtonState == lastStartButtonState)
+    {
+      startButtonState = digitalRead(STARTBUTTON_PIN);
+    }
+
+    // Show to the user that the game has begun
+    digitalWrite(LED_SUCCESS_RED, HIGH);
+    digitalWrite(LED_SUCCESS_GREEN, LOW);
+    delay(2500);
+    digitalWrite(LED_SUCCESS_GREEN, HIGH);
+    delay(1250);
+  }
+  
+  // Begin playing the background music
   tmrpcm.play("mario.wav");
   tmrpcm.loop(1);
-
-  // Draw a welcome message on the OLED screen
-  u8x8.drawString(0,0,"Hello World!"); */
   
   // Int variable to keep track of the score 
   int score = 0;
@@ -112,29 +135,14 @@ void loop()
   float allotedRunTime = 3000;
   
   // Boolean variable to keep track of whether the task was completed successfully
-  bool successful = false;
-
-  // Keep the user looped until they press the start button
-  int startButtonState = digitalRead(STARTBUTTON_PIN);
-  int lastStartButtonState = startButtonState;
-
-  while (startButtonState == lastStartButtonState)
-  {
-    startButtonState = digitalRead(STARTBUTTON_PIN);
-  }
-
-  // Show to the user that the game has begun
-  digitalWrite(LED_SUCCESS_RED, HIGH);
-  digitalWrite(LED_SUCCESS_GREEN, LOW);
-  delay(2500);
-  digitalWrite(LED_SUCCESS_GREEN, HIGH);
-  delay(1250);
-  
-  successful = true;
+  bool successful = true;
 
   // Continue the game as long as the user is successful
   while(successful == true)
   {
+    // Display the current score
+    u8x8.print(score);
+    
     // Change the alloted time for each minigame depending on progress
     if (score >= 5)
     {
@@ -160,7 +168,7 @@ void loop()
     }
   
     // Randomly pick a number between 1 and 3 to choose a minigame
-    int choice = 1;
+    int choice = random(1,3);
     
     // Volume Knob 
     if (choice == 1)
@@ -173,17 +181,17 @@ void loop()
     else if (choice == 2)
     {
       // Calls the tempo slider function
-      //successful = tempoSlider(allotedRunTime, score);
+      successful = tempoSlider(allotedRunTime, score);
     }
     
     // Turn Table
     else
     {
       // Calls the turn table function
-      //successful = turnTable(allotedRunTime, score);
+      successful = turnTable(allotedRunTime, score);
     }
 
-    /*// Delay until next game is chosen depends on score
+    // Delay until next game is chosen depends on score
     if (score < 5)
     {
       delay(1000);
@@ -202,10 +210,30 @@ void loop()
     else
     {
       delay(250);
-    }*/
-
-    delay(2000);
+    }
   }
+  
+  // User failed their minigame
+  // NEED TO FIGURE OUT HOW TO STOP PLAYING MUSIC **********************
+  // NEED TO FIGURE OUT HOW TO DISPLAY "Your final score was XXX. Press the Start button to play again!" *************
+  u8x8.print(score);
+  
+  // Keep the user looped until they press the start button
+  startButtonState = digitalRead(STARTBUTTON_PIN);
+  lastStartButtonState = startButtonState;
+
+  while (startButtonState == lastStartButtonState)
+  {
+    startButtonState = digitalRead(STARTBUTTON_PIN);
+  }
+  
+  digitalWrite(LED_SUCCESS_RED, HIGH);
+  digitalWrite(LED_SUCCESS_GREEN, LOW);
+  delay(2500);
+  digitalWrite(LED_SUCCESS_GREEN, HIGH);
+  delay(1250);
+  
+  firstPlay = true;
 }
 
 //------------------------------------------------ MINIGAMES ----------------------------------------------------
@@ -261,7 +289,7 @@ bool volumeKnob(float allotedRunTime, int score)
     digitalWrite(LED_SUCCESS_RED, LOW);
     return false;  
 }
-/*
+
 // Tempo Slider minigame
 bool tempoSlider(float allotedRunTime, int score)
 {
@@ -270,42 +298,42 @@ bool tempoSlider(float allotedRunTime, int score)
     digitalWrite(LED_SUCCESS_GREEN, HIGH);
     digitalWrite(LED_SUCCESS_RED, HIGH);
 
+    // Get the initial voltage before the minigame officially begins
+    float initialVoltage = analogRead(SLIDER_PIN) * (5.0 / 1023.0);
+
+    // Defining a treshold for the diffrence between two voltages to count as a pass
+    // Need to get this value by testing but temp 0.5v for now  
+    float minVoltage = 0.5;
+
     // The time it took since the program started 
     float initialTime = millis();
     
     // Time since the minigame began
-    float currentTime = millis();
-    
-    // Defining a treshold for the diffrence between two voltages to count as a pass
-    // Need to get this value by testing but temp 0.5v for now  
-    float minVoltage = 0.5;
-    
-    // Get the initial voltage before the minigame officially begins
-    float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
+    float currentTime = initialTime;
 
     // While loop that checks the current status of the minigame
-    while ((currentTime - initialTime) < allotedRunTime)
+    while (abs(currentTime - initialTime) < allotedRunTime)
     {
-      // Get the current time
-      currentTime = millis();
-
       // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V)
-      float currentVoltage = analogRead(A0) * (5.0 / 1023.0); 
+      float currentVoltage = analogRead(SLIDER_PIN) * (5.0 / 1023.0); 
 
       // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
       if (abs(initialVoltage - currentVoltage) >= minVoltage)
       {
         // Turn on the success LED
         digitalWrite(LED_SLIDER, LOW);
-        digitalWrite(LED_SUCCESS_GREEN,LOW);
+        digitalWrite(LED_SUCCESS_GREEN, LOW);
 
         // Display the updated score
-        score = score + 1;
-        u8x8.setCursor(0,0);
-        u8x8.print(score);
+        //score = score + 1;
+        //u8x8.setCursor(0,0);
+        //u8x8.print(score);
         
         return true;
       }
+
+      // Get the current time
+      currentTime = millis();
     }
     
     // Return false if the user fails to complete the task in time
@@ -317,52 +345,5 @@ bool tempoSlider(float allotedRunTime, int score)
 // Turn Table minigame
 bool turnTable(float allotedRunTime, int score)
 {
-    // Light up the LED above the selected minigame and turn off the success LED
-    digitalWrite(LED_TURNTABLE, HIGH);
-    digitalWrite(LED_SUCCESS_GREEN, HIGH);
-    digitalWrite(LED_SUCCESS_RED, HIGH);
-
-    // The time it took since the program started 
-    float initialTime = millis();
-    
-    // Time since the minigame began
-    float currentTime = millis();
-    
-    // Defining a treshold for the diffrence between two voltages to count as a pass
-    // Need to get this value by testing but temp 0.5v for now  
-    float minVoltage = 0.5;
-    
-    // Get the initial voltage before the minigame officially begins
-    float initialVoltage = analogRead(A0) * (5.0 / 1023.0);
-
-    // While loop that checks the current status of the minigame
-    while ((currentTime - initialTime) < allotedRunTime)
-    {
-      // Get the current time
-      currentTime = millis();
-
-      // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V)
-      float currentVoltage = analogRead(A0) * (5.0 / 1023.0); 
-
-      // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
-      if (abs(initialVoltage - currentVoltage) >= minVoltage)
-      {
-        // Turn on the success LED
-        digitalWrite(LED_TURNTABLE, LOW);
-        digitalWrite(LED_SUCCESS_GREEN,LOW);
-
-        // Display the updated score
-        score = score + 1;
-        u8x8.setCursor(0,0);
-        u8x8.print(score);
-        
-        return true;
-      }
-    }
-    
-    // Return false if the user fails to complete the task in time
-    digitalWrite(LED_TURNTABLE, LOW);
-    digitalWrite(LED_SUCCESS_RED, LOW);
-    return false;  
+  // NEED TO PROTOTYPE ROTARY ENCODER
 }
-*/
