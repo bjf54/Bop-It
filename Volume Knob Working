@@ -342,5 +342,41 @@ bool tempoSlider(float allotedRunTime, int score)
 // Turn Table minigame
 bool turnTable(float allotedRunTime, int score)
 {
-  // NEED TO PROTOTYPE ROTARY ENCODER
+  // Light up the LED above the selected minigame and turn off the success LED
+    digitalWrite(LED_TURNTABLE, HIGH);
+    digitalWrite(LED_SUCCESS_GREEN, HIGH);
+    digitalWrite(LED_SUCCESS_RED, HIGH);
+
+    // The time it took since the program started 
+    float initialTime = millis();
+    
+    // Time since the minigame began
+    float currentTime = initialTime;
+
+    // While loop that checks the current status of the minigame
+    while (abs(currentTime - initialTime) < allotedRunTime)
+    {
+      // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
+      if (digitalRead(TURNTABLE_PIN == 0)
+      {
+        // Turn on the success LED
+        digitalWrite(LED_TURNTABLE, LOW);
+        digitalWrite(LED_SUCCESS_GREEN, LOW);
+
+        // Display the updated score
+        //score = score + 1;
+        //u8x8.setCursor(0,0);
+        //u8x8.print(score);
+        
+        return true;
+      }
+
+      // Get the current time
+      currentTime = millis();
+    }
+    
+    // Return false if the user fails to complete the task in time
+    digitalWrite(LED_TURNTABLE, LOW);
+    digitalWrite(LED_SUCCESS_RED, LOW);
+    return false;  
 }
