@@ -65,11 +65,11 @@ void setup()
   // Assigning output pin for the success RGB LED
   pinMode(LED_SUCCESS_GREEN, OUTPUT);
   pinMode(LED_SUCCESS_RED, OUTPUT);
-/*
+  
   // Turn on the OLED Screen and select its font
   u8x8.begin();
   u8x8.setFont(u8x8_font_chroma48medium8_r);
-  u8x8.drawString(0,0,"Hello World!");
+  u8x8.drawString(0,0,"Welcome! Please press the Start button to begin!");
 
   // Turn on the Speaker
   tmrpcm.speakerPin = PB1;
@@ -83,13 +83,10 @@ void setup()
   }
 
   // Set the volume of the speaker
-  tmrpcm.setVolume(6); */
-  
-  // Draw a welcome message on the OLED screen
-  u8x8.drawString(0,0,"Press the Start button to begin!");
+  tmrpcm.setVolume(6);
   
   // Check for button press only during first playthrough
-  bool firstPlay = false;
+  bool firstPlay = true;
 }
 
 //------------------------------------------------ MAIN ----------------------------------------------------
@@ -105,7 +102,7 @@ void loop()
   digitalWrite(LED_SUCCESS_RED, HIGH);
   
   // Only run this during first playthrough
-  if (firstPlay == false)
+  if (firstPlay == true)
   {
     // Keep the user looped until they press the start button
     int startButtonState = digitalRead(STARTBUTTON_PIN);
@@ -233,7 +230,7 @@ void loop()
   digitalWrite(LED_SUCCESS_GREEN, HIGH);
   delay(1250);
   
-  firstPlay = true;
+  firstPlay = false;
 }
 
 //------------------------------------------------ MINIGAMES ----------------------------------------------------
