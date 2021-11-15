@@ -48,6 +48,9 @@ U8X8_SSD1306_128X64_NONAME_4W_SW_SPI u8x8
 // Create a global TMRpcm variable to be used as the speaker
 TMRpcm tmrpcm;
 
+// Create a global boolean variable to check for the first run
+bool firstPlay;
+
 // This function sets up the ATMega by designating pins to specific inputs and outputs
 void setup() 
 {
@@ -86,7 +89,7 @@ void setup()
   tmrpcm.setVolume(6);
   
   // Check for button press only during first playthrough
-  bool firstPlay = true;
+  firstPlay = true;
 }
 
 //------------------------------------------------ MAIN ----------------------------------------------------
@@ -101,12 +104,16 @@ void loop()
   digitalWrite(LED_SUCCESS_GREEN, HIGH);
   digitalWrite(LED_SUCCESS_RED, HIGH);
   
+  // Variables for the start button's state
+  int startButtonState;
+  int lastStartButtonState;
+  
   // Only run this during first playthrough
   if (firstPlay == true)
   {
     // Keep the user looped until they press the start button
-    int startButtonState = digitalRead(STARTBUTTON_PIN);
-    int lastStartButtonState = startButtonState;
+    startButtonState = digitalRead(STARTBUTTON_PIN);
+    lastStartButtonState = startButtonState;
 
     while (startButtonState == lastStartButtonState)
     {
@@ -357,7 +364,7 @@ bool turnTable(float allotedRunTime, int score)
     while (abs(currentTime - initialTime) < allotedRunTime)
     {
       // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
-      if (digitalRead(TURNTABLE_PIN == 0)
+      if (digitalRead(TURNTABLE_PIN) == 0)
       {
         // Turn on the success LED
         digitalWrite(LED_TURNTABLE, LOW);
