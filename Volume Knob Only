@@ -1,0 +1,207 @@
+// Bop-It! Eta Group
+// ECE 1895 - Bop-It! Design Project 2
+// Brandon Ferruzza, BJF54
+// Daniel Feathers, DWF16
+// Veronica Roth, VGR3
+// The purpose of this program is to create a Bop-It! toy capable of providing the user three types of minigames to play.
+
+//------------------------------------------------ INITIALIZATION ----------------------------------------------------
+
+// Define the input pins for the start button
+#define STARTBUTTON_PIN   PD6
+
+// Define the input pins for the minigame hardware
+#define KNOB_PIN          PC1
+
+// Define the output pins for the LEDs indicating which minigame to play
+#define LED_KNOB          PD2
+
+// Define the output pins for the RGB success LED
+#define LED_SUCCESS_GREEN PD1
+#define LED_SUCCESS_RED   PD0
+
+// Create a global boolean variable to check for the first run
+bool firstPlay;
+
+// This function sets up the ATMega by designating pins to specific inputs and outputs
+void setup() 
+{
+  // Assigning input pins for the minigame inputs
+  pinMode(STARTBUTTON_PIN, INPUT);
+  pinMode(KNOB_PIN, INPUT);
+  
+  // Assigning output pins for the LED that lights up over the current minigame
+  pinMode(LED_KNOB, OUTPUT);
+
+  // Assigning output pin for the success RGB LED
+  pinMode(LED_SUCCESS_GREEN, OUTPUT);
+  pinMode(LED_SUCCESS_RED, OUTPUT);
+  
+  // Check for button press only during first playthrough
+  firstPlay = true;
+}
+
+//------------------------------------------------ MAIN ----------------------------------------------------
+
+// Main function
+void loop() 
+{
+  // Make sure no LEDs are on
+  digitalWrite(LED_KNOB, LOW);
+  digitalWrite(LED_SUCCESS_GREEN, HIGH);
+  digitalWrite(LED_SUCCESS_RED, HIGH);
+  
+  // Variables for the start button's state
+  int startButtonState;
+  int lastStartButtonState;
+  
+  // Only run this during first playthrough
+  if (firstPlay == true)
+  {
+    // Keep the user looped until they press the start button
+    startButtonState = digitalRead(STARTBUTTON_PIN);
+    lastStartButtonState = startButtonState;
+
+    while (startButtonState == lastStartButtonState)
+    {
+      startButtonState = digitalRead(STARTBUTTON_PIN);
+    }
+
+    // Show to the user that the game has begun
+    digitalWrite(LED_SUCCESS_RED, HIGH);
+    digitalWrite(LED_SUCCESS_GREEN, LOW);
+    delay(2500);
+    digitalWrite(LED_SUCCESS_GREEN, HIGH);
+    delay(1250);
+  }
+  
+  // Int variable to keep track of the score 
+  int score = 0;
+
+  // Int variable to keep track of the time, which is initialized at 3 seconds
+  float allotedRunTime = 3000;
+  
+  // Boolean variable to keep track of whether the task was completed successfully
+  bool successful = true;
+
+  // Continue the game as long as the user is successful
+  while(successful == true)
+  {  
+    // Change the alloted time for each minigame depending on progress
+    if (score >= 5)
+    {
+      allotedRunTime = 2500;
+    
+      // Time for a score of 10 or higher
+      if (score >= 10)
+      {
+        allotedRunTime = 2000;
+      
+        // Time for a score of 20 or higher
+        if (score >= 20)
+        {
+          allotedRunTime = 1500;
+        
+          // Time for a score of 30 or higher
+          if (score >= 30)
+          {
+            allotedRunTime = 1000;
+          }
+        }
+      }
+    }
+    
+    // Calls the volume knob function
+    successful = volumeKnob(allotedRunTime, score);
+
+    // Delay until next game is chosen depends on score
+    if (score < 5)
+    {
+      delay(1000);
+    }
+    
+    else if (score < 10)
+    {
+      delay(750);
+    }
+
+    else if (score < 20)
+    {
+      delay(500);
+    }
+
+    else
+    {
+      delay(250);
+    }
+  }
+  
+  // Keep the user looped until they press the start button
+  startButtonState = digitalRead(STARTBUTTON_PIN);
+  lastStartButtonState = startButtonState;
+
+  while (startButtonState == lastStartButtonState)
+  {
+    startButtonState = digitalRead(STARTBUTTON_PIN);
+  }
+  
+  digitalWrite(LED_SUCCESS_RED, HIGH);
+  digitalWrite(LED_SUCCESS_GREEN, LOW);
+  delay(2500);
+  digitalWrite(LED_SUCCESS_GREEN, HIGH);
+  delay(1250);
+  
+  firstPlay = false;
+}
+
+//------------------------------------------------ MINIGAMES ----------------------------------------------------
+
+// Volume Knob minigame
+bool volumeKnob(float allotedRunTime, int score)
+{   
+    // Light up the LED above the selected minigame and turn off the success LED
+    digitalWrite(LED_KNOB, HIGH);
+    digitalWrite(LED_SUCCESS_GREEN, HIGH);
+    digitalWrite(LED_SUCCESS_RED, HIGH);
+
+    // Get the initial voltage before the minigame officially begins
+    float initialVoltage = analogRead(KNOB_PIN) * (5.0 / 1023.0);
+
+    // Defining a treshold for the diffrence between two voltages to count as a pass
+    // Need to get this value by testing but temp 0.5v for now  
+    float minVoltage = 0.5;
+
+    // The time it took since the program started 
+    float initialTime = millis();
+    
+    // Time since the minigame began
+    float currentTime = initialTime;
+
+    // While loop that checks the current status of the minigame
+    while (abs(currentTime - initialTime) < allotedRunTime)
+    {
+      // Convert the analog reading (which goes from 0 - 1023) to a voltage (0 - 5V)
+      float currentVoltage = analogRead(KNOB_PIN) * (5.0 / 1023.0); 
+
+      // If the difference in voltage is large enough and the user did it before time ran out, the user was successful
+      if (abs(initialVoltage - currentVoltage) >= minVoltage)
+      {
+        // Turn on the success LED
+        digitalWrite(LED_KNOB, LOW);
+        digitalWrite(LED_SUCCESS_GREEN, LOW);
+
+        // Display the updated score
+        score = score + 1;
+        
+        return true;
+      }
+
+      // Get the current time
+      currentTime = millis();
+    }
+    
+    // Return false if the user fails to complete the task in time
+    digitalWrite(LED_KNOB, LOW);
+    digitalWrite(LED_SUCCESS_RED, LOW);
+    return false;  
+}
