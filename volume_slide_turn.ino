@@ -14,30 +14,30 @@
 #include <SPI.h>
 
 // Define the input pins for the start button
-#define STARTBUTTON_PIN   PD4
+#define STARTBUTTON_PIN   4
 
 // Define the input pins for the minigame hardware
-#define KNOB_PIN          PC2
-#define SLIDER_PIN        PC0
-#define TURNTABLE_PIN     PB0
+#define KNOB_PIN          A2
+#define SLIDER_PIN        A0
+#define TURNTABLE_PIN     8
 
 // Define the output pins for the LEDs indicating which minigame to play
-#define LED_KNOB          PD3
-#define LED_SLIDER        PC1
-#define LED_TURNTABLE     PD7
+#define LED_KNOB          3
+#define LED_SLIDER        A1
+#define LED_TURNTABLE     7
 
 // Define the output pins for the OLED display screen
-#define OLED_CS           PD2
-#define OLED_RESET        PD0
-#define OLED_DC           PD1
+#define OLED_CS           2
+#define OLED_RESET        0
+#define OLED_DC           1
 
 // Define the output pins for the RGB success LED
-#define LED_SUCCESS_GREEN PD6
-#define LED_SUCCESS_RED   PD5
+#define LED_SUCCESS_GREEN 6
+#define LED_SUCCESS_RED   5
 
 // Define the output pins for the audio output
-#define SPEAKER_PIN       PB1
-#define SD_ChipSelectPin  PB2
+#define SPEAKER_PIN       9
+#define SD_ChipSelectPin  10
 
 // Initializes the OLED screen
 U8X8_SSD1306_128X64_NONAME_4W_SW_SPI u8x8
