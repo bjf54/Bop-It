@@ -14,26 +14,26 @@
 #include <SPI.h>
 
 // Define the input pins for the start button
-#define STARTBUTTON_PIN   PD6
+#define STARTBUTTON_PIN   PD4
 
 // Define the input pins for the minigame hardware
-#define KNOB_PIN          PC1
+#define KNOB_PIN          PC2
 #define SLIDER_PIN        PC0
-#define TURNTABLE_PIN     PD5
+#define TURNTABLE_PIN     PB0
 
 // Define the output pins for the LEDs indicating which minigame to play
-#define LED_KNOB          PD2
-#define LED_SLIDER        PD3
-#define LED_TURNTABLE     PD4
+#define LED_KNOB          PD3
+#define LED_SLIDER        PC1
+#define LED_TURNTABLE     PD7
 
 // Define the output pins for the OLED display screen
-#define OLED_CS           PD7
-#define OLED_RESET        PB0
-#define OLED_DC           PB3
+#define OLED_CS           PD2
+#define OLED_RESET        PD0
+#define OLED_DC           PD1
 
 // Define the output pins for the RGB success LED
-#define LED_SUCCESS_GREEN PD1
-#define LED_SUCCESS_RED   PD0
+#define LED_SUCCESS_GREEN PD6
+#define LED_SUCCESS_RED   PD5
 
 // Define the output pins for the audio output
 #define SPEAKER_PIN       PB1
@@ -69,7 +69,6 @@ void setup()
   pinMode(LED_SUCCESS_GREEN, OUTPUT);
   pinMode(LED_SUCCESS_RED, OUTPUT);
 
-/*
   // Turn on the OLED Screen and select its font
   u8x8.begin();
   u8x8.setFont(u8x8_font_chroma48medium8_r);
@@ -87,7 +86,7 @@ void setup()
   }
 
   // Set the volume of the speaker
-  tmrpcm.setVolume(6); */
+  tmrpcm.setVolume(6);
 
   // Check for the button press during the first playthrough
   firstPlay = true;
@@ -129,12 +128,12 @@ void loop()
     delay(1250);
   }
   
-  /*// Begin playing the background music
+  // Begin playing the background music
   tmrpcm.play("mario.wav");
   tmrpcm.loop(1);
 
   // Draw a welcome message on the OLED screen
-  u8x8.drawString(0,0,"Hello World!"); */
+  u8x8.drawString(0,0,"Hello World!");
   
   // Int variable to keep track of the score 
   int score = 0;
@@ -149,7 +148,7 @@ void loop()
   while(successful == true)
   {
     // Display the current score
-    //u8x8.print(score);
+    u8x8.print(score);
     
     // Change the alloted time for each minigame depending on progress
     if (score >= 5)
@@ -232,7 +231,7 @@ void loop()
   // NEED TO FIGURE OUT HOW TO DISPLAY "Your final score was XXX. Press the Start button to play again!"
 
   // Print the user's final score
-  //u8x8.print(score);
+  u8x8.print(score);
 
   // Keep the user looped until they press the Start button
   startButtonState = digitalRead(STARTBUTTON_PIN);
