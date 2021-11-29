@@ -1,4 +1,4 @@
-// Bop-It! Eta Group
+// Bop-It! Eta Group
 // ECE 1895 - Bop-It! Design Project 2
 // Brandon Ferruzza, BJF54
 // Daniel Feathers, DWF16
@@ -86,8 +86,6 @@ void setup()
   tmrpcm.speakerPin = 9;
   //Serial.begin(9600);
 
-  
-
   // Make sure that the SD card can be read
   while(!SD.begin(SD_ChipSelectPin))
   {
@@ -128,12 +126,8 @@ void loop()
   // Only run this during first playthrough
   if (firstPlay == true)
   {
-    
     delay(2000);
     u8x8.clear();
-    //Testing just to make sure it gets in the loop
-    digitalWrite(A1,HIGH);
-    //u8x8.setFont(u8x8_font_chroma48medium8_r);
     // Draw a welcome message on the OLED screen
     u8x8.drawString(0,0,"Press the Start button to begin!");
 
@@ -201,27 +195,27 @@ void loop()
     }
   
     // Randomly pick a number between 1 and 3 to choose a minigame
-    int choice = 3;//random(1,4);
+    int choice = random(1,4);
     
     // Volume Knob 
     if (choice == 1)
     {
        // Calls the volume knob function
-       successful = volumeKnob(allotedRunTime, score);
+       successful = volumeKnob(allotedRunTime);
     }
     
     // Tempo Slider
     else if (choice == 2)
     {
       // Calls the tempo slider function
-     successful = tempoSlider(allotedRunTime, score);
+     successful = tempoSlider(allotedRunTime);
     }
     
     // Turn Table
     else if (choice == 3)
     {
       // Calls the turn table function
-      successful = turnTable(allotedRunTime, score);
+      successful = turnTable(allotedRunTime);
     }
 
     // Delay until next game is chosen depends on score
@@ -290,7 +284,7 @@ void loop()
 //------------------------------------------------ MINIGAMES ----------------------------------------------------
 
 // Volume Knob minigame
-bool volumeKnob(float allotedRunTime, int score)
+bool volumeKnob(float allotedRunTime)
 {   
     // Light up the LED above the selected minigame and turn off the success LED
     digitalWrite(LED_KNOB, HIGH);
@@ -342,7 +336,7 @@ bool volumeKnob(float allotedRunTime, int score)
 }
 
 // Tempo Slider minigame
-bool tempoSlider(float allotedRunTime, int score)
+bool tempoSlider(float allotedRunTime)
 {
     // Light up the LED above the selected minigame and turn off the success LED
     digitalWrite(LED_SLIDER, HIGH);
@@ -394,7 +388,7 @@ bool tempoSlider(float allotedRunTime, int score)
 }
 
 // Turn Table minigame
-bool turnTable(float allotedRunTime, int score)
+bool turnTable(float allotedRunTime)
 {
     // Light up the LED above the selected minigame and turn off the success LED
     digitalWrite(LED_TURNTABLE, HIGH);
@@ -426,7 +420,7 @@ bool turnTable(float allotedRunTime, int score)
         digitalWrite(LED_SUCCESS_GREEN,LOW);
         
         // Display the updated score
-        score = score + 1;
+        score++;
         displayText(score);
         
         return true;
