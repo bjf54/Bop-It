@@ -71,34 +71,33 @@ void setup()
   pinMode(LED_SUCCESS_RED, OUTPUT);
   digitalWrite(LED_SUCCESS_RED, HIGH);
 
+  // Check for the button press during the first playthrough
+  firstPlay = true;
+
   // Initialize the OLED screen
   u8x8.begin();
   u8x8.setFont(u8x8_font_chroma48medium8_r);
-  u8x8.drawString(0,0,"First");
-  delay(2000);
-  u8x8.clear();
-  u8x8.drawString(0,0,"Second");
-  delay(2000);
-  u8x8.clear();
-  u8x8.drawString(0,0,"Third");
+  //u8x8.drawString(0,0,"First");
+  //delay(2000);
+  //u8x8.clear();
+  //u8x8.drawString(0,0,"Second");
+  //delay(2000);
+  //u8x8.clear();
+  //u8x8.drawString(0,0,"Third");
 
   // Turn on the Speaker
   tmrpcm.speakerPin = 9;
-  //Serial.begin(9600);
 
   // Make sure that the SD card can be read
   while(!SD.begin(SD_ChipSelectPin))
   {
-//    u8x8.clear();
-//    u8x8.drawString(0,0,"card fucked");
+    u8x8.clear();
+    u8x8.drawString(0,0,"card fucked");
     return;
   }
 
   // Set the volume of the speaker
   tmrpcm.setVolume(6);
-
-  // Check for the button press during the first playthrough
-  firstPlay = true;
 
   // Make sure no LEDs are on
   digitalWrite(LED_KNOB, LOW);
@@ -106,9 +105,6 @@ void setup()
   digitalWrite(LED_TURNTABLE, LOW);
   digitalWrite(LED_SUCCESS_GREEN, HIGH);
   digitalWrite(LED_SUCCESS_RED, HIGH);
-
-  u8x8.clear();
-  u8x8.drawString(0,0,"Fourth");
 }
 
 //------------------------------------------------ MAIN ----------------------------------------------------
@@ -126,8 +122,7 @@ void loop()
   // Only run this during first playthrough
   if (firstPlay == true)
   {
-    delay(2000);
-    u8x8.clear();
+     u8x8.clear();
     // Draw a welcome message on the OLED screen
     u8x8.drawString(0,0,"Press the Start button to begin!");
 
